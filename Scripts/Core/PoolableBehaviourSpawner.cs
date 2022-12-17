@@ -5,13 +5,20 @@ namespace EmreBeratKR.PB
     public abstract class PoolableBehaviourSpawner<T> : MonoBehaviour
         where T : MonoBehaviour, IPoolableBehaviour<T>
     {
-        protected virtual BehaviourPool<T> Pool { get; set; }
+        public int CountAll => m_Pool.CountAll;
+        public int CountActive => m_Pool.CountActive;
+        public int CountInactive => m_Pool.CountInactive;
+        
+        
         protected abstract T Prefab { get; }
+
+
+        private BehaviourPool<T> m_Pool;
 
 
         protected virtual void Awake()
         {
-            Pool = new BehaviourPool<T>();
+            m_Pool = new BehaviourPool<T>();
         }
 
 
@@ -27,8 +34,18 @@ namespace EmreBeratKR.PB
         
         public T Spawn(Vector3 position, Quaternion rotation, Transform parent = null)
         {
-            var newObject = Pool.GetObject(Prefab, position, rotation, parent);
+            var newObject = m_Pool.GetObject(Prefab, position, rotation, parent);
             return newObject;
+        }
+
+        public void ChangeCapacity(int capacity)
+        {
+            m_Pool.ChangeCapacity(capacity);
+        }
+
+        public void Clear()
+        {
+            m_Pool.Clear();
         }
     }
 }

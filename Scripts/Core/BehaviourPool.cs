@@ -10,20 +10,54 @@ namespace EmreBeratKR.PB
         where T : MonoBehaviour, IPoolableBehaviour<T>
     {
         private const int InfinityCapacity = -1;
-        
-        
-        public int CountAll => CountActive + CountInactive;
-        public int CountActive => m_ActiveObjects.Count;
-        public int CountInactive => m_InactiveObjects.Count;
+
+
+        public int CountAll => m_Objects.Count;
+
+        public int CountActive
+        {
+            get
+            {
+                var count = 0;
+
+                for (var i = 0; i < m_Objects.Count; i++)
+                {
+                    var obj = m_Objects[i];
+                    
+                    if (!obj.IsActive) continue;
+
+                    count++;
+                }
+
+                return count;
+            }
+        }
+
+        public int CountInactive
+        {
+            get
+            {
+                var count = 0;
+                
+                for (var i = 0; i < m_Objects.Count; i++)
+                {
+                    var obj = m_Objects[i];
+                    
+                    if (obj.IsActive) continue;
+
+                    count++;
+                }
+
+                return count;
+            }
+        }
 
 
         private bool IsFull => !IsInfinityCapacity && CountAll >= m_CurrentCapacity;
-        private bool HasInactiveObject => m_InactiveObjects.Count > 0;
         private bool IsInfinityCapacity => m_CurrentCapacity == InfinityCapacity;
 
 
-        private List<T> m_ActiveObjects = new List<T>();
-        private List<T> m_InactiveObjects = new List<T>();
+        private List<T> m_Objects = new List<T>();
         private int m_CurrentCapacity;
         private int m_InitialCapacity;
 
@@ -46,16 +80,13 @@ namespace EmreBeratKR.PB
         
         public T GetObject(T prefab, Vector3 position, Quaternion rotation, Transform parent = null)
         {
-            if (HasInactiveObject)
+            if (TryGetFirstInactiveObject(out var firstInactiveObject))
             {
-                var firstInactiveObject = m_InactiveObjects[0];
                 firstInactiveObject.OnBeforeInitialized();
                 firstInactiveObject.SetPosition(position);
                 firstInactiveObject.SetRotation(rotation);
                 firstInactiveObject.SetParent(parent);
-                m_InactiveObjects.RemoveAt(0);
                 firstInactiveObject.IsActive = true;
-                m_ActiveObjects.Add(firstInactiveObject);
                 firstInactiveObject.OnAfterInitialized();
                 return firstInactiveObject;
             }
@@ -68,7 +99,7 @@ namespace EmreBeratKR.PB
             var newObject = Object.Instantiate(prefab, position, rotation, parent);
             newObject.OnBeforeInitialized();
             newObject.Inject(this);
-            m_ActiveObjects.Add(newObject);
+            m_Objects.Add(newObject);
             newObject.OnAfterInitialized();
             return newObject;
         }
@@ -77,8 +108,6 @@ namespace EmreBeratKR.PB
         {
             obj.OnReset();
             obj.IsActive = false;
-            m_ActiveObjects.Remove(obj);
-            m_InactiveObjects.Add(obj);
         }
 
         public void ChangeCapacity(int capacity)
@@ -94,21 +123,31 @@ namespace EmreBeratKR.PB
 
         public void Clear()
         {
-            foreach (var activeObject in m_ActiveObjects)
+            foreach (var obj in m_Objects)
             {
-                Object.Destroy(activeObject);
-            }
-
-            foreach (var inactiveObject in m_InactiveObjects)
-            {
-                Object.Destroy(inactiveObject);
+                obj.Destroy();
             }
             
-            m_ActiveObjects.Clear();
-            m_InactiveObjects.Clear();
+            m_Objects.Clear();
         }
 
 
+        private bool TryGetFirstInactiveObject(out T firstInactiveObject)
+        {
+            for (var i = 0; i < m_Objects.Count; i++)
+            {
+                var obj = m_Objects[i];
+                    
+                if (obj.IsActive) continue;
+
+                firstInactiveObject = obj;
+                return true;
+            }
+
+            firstInactiveObject = null;
+            return false;
+        }
+        
         private void IncreaseCapacity()
         {
             var oldCapacity = m_CurrentCapacity;

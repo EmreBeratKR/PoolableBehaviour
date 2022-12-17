@@ -30,6 +30,11 @@ namespace EmreBeratKR.PB
             transform.SetParent(parent);
         }
 
+        public void Destroy()
+        {
+            Destroy(gameObject);
+        }
+
         public virtual void Release()
         {
             Pool.ReleaseObject(this as T);

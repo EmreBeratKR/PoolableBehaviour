@@ -9,6 +9,7 @@ namespace EmreBeratKR.PB
         void SetPosition(Vector3 position);
         void SetRotation(Quaternion rotation);
         void SetParent(Transform parent);
+        void Destroy();
         void Release();
         void Inject(BehaviourPool<T> pool);
         void OnReset();
