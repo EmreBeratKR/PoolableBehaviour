@@ -3,7 +3,7 @@ using UnityEngine;
 namespace EmreBeratKR.PB
 {
     public abstract class PoolableBehaviourSpawner<T> : MonoBehaviour
-        where T : MonoBehaviour, IPoolableBehaviour<T>
+        where T : MonoBehaviour, IPoolableBehaviour, IPoolableBehaviour<T>
     {
         public int CountAll => m_Pool.CountAll;
         public int CountActive => m_Pool.CountActive;
@@ -13,7 +13,7 @@ namespace EmreBeratKR.PB
         protected abstract T Prefab { get; }
 
 
-        private BehaviourPool<T> m_Pool;
+        private IBehaviourPool<T> m_Pool;
 
 
         protected virtual void Awake()

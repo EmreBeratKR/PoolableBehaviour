@@ -2,45 +2,18 @@ using UnityEngine;
 
 namespace EmreBeratKR.PB
 {
-    public abstract class PoolableBehaviour<T> : MonoBehaviour, IPoolableBehaviour<T> 
-        where T : MonoBehaviour, IPoolableBehaviour<T>
+    public abstract class PoolableBehaviour<T> : MonoBehaviour, IPoolableBehaviour<T>, IPoolableBehaviour
+        where T : MonoBehaviour, IPoolableBehaviour<T>, IPoolableBehaviour
     {
-        public bool IsActive
-        {
-            get => gameObject.activeSelf;
-            set => gameObject.SetActive(value);
-        }
-
-
-        protected virtual BehaviourPool<T> Pool { get; set; }
-
-
-        public virtual void SetPosition(Vector3 position)
-        {
-            transform.position = position;
-        }
-
-        public virtual void SetRotation(Quaternion rotation)
-        {
-            transform.rotation = rotation;
-        }
-
-        public virtual void SetParent(Transform parent)
-        {
-            transform.SetParent(parent);
-        }
-
-        public void Destroy()
-        {
-            Destroy(gameObject);
-        }
+        protected virtual IBehaviourPool<T> Pool { get; set; }
+        
 
         public virtual void Release()
         {
             Pool.ReleaseObject(this as T);
         }
 
-        public virtual void Inject(BehaviourPool<T> pool)
+        public virtual void Inject(IBehaviourPool<T> pool)
         {
             Pool = pool;
         }

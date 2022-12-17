@@ -6,8 +6,8 @@ using Object = UnityEngine.Object;
 namespace EmreBeratKR.PB
 {
     [Serializable]
-    public class BehaviourPool<T> 
-        where T : MonoBehaviour, IPoolableBehaviour<T>
+    public class BehaviourPool<T> : IBehaviourPool<T>, IBehaviourPool
+        where T : MonoBehaviour, IPoolableBehaviour<T>, IPoolableBehaviour
     {
         private const int InfinityCapacity = -1;
 
@@ -24,7 +24,7 @@ namespace EmreBeratKR.PB
                 {
                     var obj = m_Objects[i];
                     
-                    if (!obj.IsActive) continue;
+                    if (!obj.gameObject.activeSelf) continue;
 
                     count++;
                 }
@@ -43,7 +43,7 @@ namespace EmreBeratKR.PB
                 {
                     var obj = m_Objects[i];
                     
-                    if (obj.IsActive) continue;
+                    if (obj.gameObject.activeSelf) continue;
 
                     count++;
                 }
@@ -70,7 +70,12 @@ namespace EmreBeratKR.PB
 
         public T GetObject(T prefab)
         {
-            return GetObject(prefab, Vector3.zero, Quaternion.identity);
+            return GetObject(prefab, null);
+        }
+        
+        public T GetObject(T prefab, Transform parent)
+        {
+            return GetObject(prefab, Vector3.zero, Quaternion.identity, parent);
         }
 
         public T GetObject(T prefab, Vector3 position)
@@ -78,15 +83,21 @@ namespace EmreBeratKR.PB
             return GetObject(prefab, position, Quaternion.identity);
         }
         
-        public T GetObject(T prefab, Vector3 position, Quaternion rotation, Transform parent = null)
+        public T GetObject(T prefab, Vector3 position, Quaternion rotation)
+        {
+            return GetObject(prefab, position, rotation, null);
+        }
+        
+        public T GetObject(T prefab, Vector3 position, Quaternion rotation, Transform parent)
         {
             if (TryGetFirstInactiveObject(out var firstInactiveObject))
             {
                 firstInactiveObject.OnBeforeInitialized();
-                firstInactiveObject.SetPosition(position);
-                firstInactiveObject.SetRotation(rotation);
-                firstInactiveObject.SetParent(parent);
-                firstInactiveObject.IsActive = true;
+                var firstInactiveObjectTransform = firstInactiveObject.transform;
+                firstInactiveObjectTransform.position = position;
+                firstInactiveObjectTransform.rotation = rotation;
+                firstInactiveObjectTransform.SetParent(parent);
+                firstInactiveObject.gameObject.SetActive(true);
                 firstInactiveObject.OnAfterInitialized();
                 return firstInactiveObject;
             }
@@ -107,7 +118,7 @@ namespace EmreBeratKR.PB
         public void ReleaseObject(T obj)
         {
             obj.OnReset();
-            obj.IsActive = false;
+            obj.gameObject.SetActive(false);
         }
 
         public void ChangeCapacity(int capacity)
@@ -125,7 +136,7 @@ namespace EmreBeratKR.PB
         {
             foreach (var obj in m_Objects)
             {
-                obj.Destroy();
+                Object.Destroy(obj.gameObject);
             }
             
             m_Objects.Clear();
@@ -138,7 +149,7 @@ namespace EmreBeratKR.PB
             {
                 var obj = m_Objects[i];
                     
-                if (obj.IsActive) continue;
+                if (obj.gameObject.activeSelf) continue;
 
                 firstInactiveObject = obj;
                 return true;
