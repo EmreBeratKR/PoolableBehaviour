@@ -1,0 +1,10 @@
+{
+  "name": "com.emreberatkr.poolablebehaviour",
+  "displayName": "Poolable Behaviour",
+  "version": "1.0.0",
+  "documentationUrl": "https://github.com/EmreBeratKR/PoolableBehaviour",
+  "changelogUrl": "https://github.com/EmreBeratKR/PoolableBehaviour/releases",
+  "licensesUrl": "https://github.com/EmreBeratKR/PoolableBehaviour/blob/main/LICENSE",
+  "description": "This asset make MonoBehaviours to be auto object pooled.",
+  "hideInEditor": false
+}
