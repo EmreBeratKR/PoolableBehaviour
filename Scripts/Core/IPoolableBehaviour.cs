@@ -4,6 +4,9 @@ namespace EmreBeratKR.PB
 {
     public interface IPoolableBehaviour
     {
+        GameObject GameObject { get; }
+        Transform Transform { get; }
+        int ID { get; }
         void Release();
         void OnReset();
         void OnBeforeInitialized();

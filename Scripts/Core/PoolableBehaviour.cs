@@ -7,7 +7,41 @@ namespace EmreBeratKR.PB
     public abstract class PoolableBehaviour<T> : MonoBehaviour, IPoolableBehaviour<T>, IPoolableBehaviour
         where T : MonoBehaviour, IPoolableBehaviour<T>, IPoolableBehaviour
     {
+        public GameObject GameObject
+        {
+            get
+            {
+                Cache();
+                return m_GameObject;
+            }
+        }
+
+        public Transform Transform
+        {
+            get
+            {
+                Cache();
+                return m_Transform;
+            }
+        }
+
+        public int ID
+        {
+            get
+            {
+                Cache();
+                return m_Id;
+            }
+        }
+
+
         protected virtual IBehaviourPool<T> Pool { get; set; }
+
+
+        private GameObject m_GameObject;
+        private Transform m_Transform;
+        private int m_Id;
+        private bool m_IsCached;
         
 
         public virtual void Release()
@@ -33,6 +67,18 @@ namespace EmreBeratKR.PB
         public virtual void OnAfterInitialized()
         {
             
+        }
+
+
+        private void Cache()
+        {
+            if (m_IsCached) return;
+            
+            m_GameObject = gameObject;
+            m_Transform = transform;
+            m_Id = GetInstanceID();
+
+            m_IsCached = true;
         }
     }
 

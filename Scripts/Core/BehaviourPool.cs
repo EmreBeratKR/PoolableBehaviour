@@ -1,73 +1,34 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace EmreBeratKR.PB
 {
-    [Serializable]
     public class BehaviourPool<T> : IBehaviourPool<T>, IBehaviourPool
         where T : MonoBehaviour, IPoolableBehaviour<T>, IPoolableBehaviour
     {
-        public const int InfinityCapacity = -1;
+        public int CountAll => CountActive + CountInactive;
 
+        public int CountActive => m_ActiveObjects.Count;
 
-        public int CountAll => m_Objects.Count;
-
-        public int CountActive
-        {
-            get
-            {
-                var count = 0;
-
-                for (var i = 0; i < m_Objects.Count; i++)
-                {
-                    var obj = m_Objects[i];
-                    
-                    if (!obj.gameObject.activeSelf) continue;
-
-                    count++;
-                }
-
-                return count;
-            }
-        }
-
-        public int CountInactive
-        {
-            get
-            {
-                var count = 0;
-                
-                for (var i = 0; i < m_Objects.Count; i++)
-                {
-                    var obj = m_Objects[i];
-                    
-                    if (obj.gameObject.activeSelf) continue;
-
-                    count++;
-                }
-
-                return count;
-            }
-        }
+        public int CountInactive => m_InactiveObjects.Count;
 
 
         private bool IsFull => !IsInfinityCapacity && CountAll >= m_CurrentCapacity;
-        private bool IsInfinityCapacity => m_CurrentCapacity == InfinityCapacity;
+        private bool IsInfinityCapacity => m_CurrentCapacity == Constant.InfinityCapacity;
 
 
-        private List<T> m_Objects = new List<T>();
+        private readonly Dictionary<int, T> m_ActiveObjects = new Dictionary<int, T>();
+        private readonly Queue<T> m_InactiveObjects = new Queue<T>();
         private int m_CurrentCapacity;
         private int m_InitialCapacity;
 
         
-        public BehaviourPool(int capacity = InfinityCapacity)
+        public BehaviourPool(int capacity = Constant.InfinityCapacity)
         {
             ChangeCapacity(capacity);
         }
 
-        public BehaviourPool(T prefab, int prefillCount, Transform parent = null, int capacity = InfinityCapacity)
+        public BehaviourPool(T prefab, int prefillCount, Transform parent = null, int capacity = Constant.InfinityCapacity)
         {
            ChangeCapacity(capacity);
            Prefill(prefab, prefillCount, parent);
@@ -96,14 +57,15 @@ namespace EmreBeratKR.PB
         
         public T GetObject(T prefab, Vector3 position, Quaternion rotation, Transform parent)
         {
-            if (TryGetFirstInactiveObject(out var firstInactiveObject))
+            if (m_InactiveObjects.TryDequeue(out var firstInactiveObject))
             {
                 firstInactiveObject.OnBeforeInitialized();
-                var firstInactiveObjectTransform = firstInactiveObject.transform;
+                var firstInactiveObjectTransform = firstInactiveObject.Transform;
                 firstInactiveObjectTransform.position = position;
                 firstInactiveObjectTransform.rotation = rotation;
                 firstInactiveObjectTransform.SetParent(parent);
-                firstInactiveObject.gameObject.SetActive(true);
+                firstInactiveObject.GameObject.SetActive(true);
+                m_ActiveObjects[firstInactiveObject.ID] = firstInactiveObject;
                 firstInactiveObject.OnAfterInitialized();
                 return firstInactiveObject;
             }
@@ -116,7 +78,7 @@ namespace EmreBeratKR.PB
             var newObject = Object.Instantiate(prefab, position, rotation, parent);
             newObject.OnBeforeInitialized();
             newObject.Inject(this);
-            m_Objects.Add(newObject);
+            m_ActiveObjects[newObject.ID] = newObject;
             newObject.OnAfterInitialized();
             return newObject;
         }
@@ -124,12 +86,14 @@ namespace EmreBeratKR.PB
         public void ReleaseObject(T obj)
         {
             obj.OnReset();
-            obj.gameObject.SetActive(false);
+            obj.GameObject.SetActive(false);
+            m_ActiveObjects.Remove(obj.ID);
+            m_InactiveObjects.Enqueue(obj);
         }
 
         public void ChangeCapacity(int capacity)
         {
-            if (capacity <= 0 && capacity != InfinityCapacity)
+            if (capacity <= 0 && capacity != Constant.InfinityCapacity)
             {
                 throw new InvalidPoolCapacityException();
             }
@@ -140,12 +104,18 @@ namespace EmreBeratKR.PB
 
         public void Clear()
         {
-            foreach (var obj in m_Objects)
+            foreach (var (id, obj) in m_ActiveObjects)
             {
-                Object.Destroy(obj.gameObject);
+                Object.Destroy(obj.GameObject);
+            }
+
+            foreach (var obj in m_InactiveObjects)
+            {
+                Object.Destroy(obj.GameObject);
             }
             
-            m_Objects.Clear();
+            m_ActiveObjects.Clear();
+            m_InactiveObjects.Clear();
         }
 
 
@@ -155,27 +125,11 @@ namespace EmreBeratKR.PB
             {
                 var newObject = Object.Instantiate(prefab, parent);
                 newObject.Inject(this);
-                m_Objects.Add(newObject);
-                newObject.gameObject.SetActive(false);
+                m_InactiveObjects.Enqueue(newObject);
+                newObject.GameObject.SetActive(false);
             }
         }
-        
-        private bool TryGetFirstInactiveObject(out T firstInactiveObject)
-        {
-            for (var i = 0; i < m_Objects.Count; i++)
-            {
-                var obj = m_Objects[i];
-                    
-                if (obj.gameObject.activeSelf) continue;
 
-                firstInactiveObject = obj;
-                return true;
-            }
-
-            firstInactiveObject = null;
-            return false;
-        }
-        
         private void IncreaseCapacity()
         {
             var oldCapacity = m_CurrentCapacity;

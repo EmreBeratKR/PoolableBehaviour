@@ -8,7 +8,7 @@ namespace EmreBeratKR.PB
         [SerializeField] private T prefab;
         [SerializeField] private Transform parent;
         [SerializeField, Min(0)] private int prefillCount;
-        [SerializeField, Min(-1)] private int capacity = BehaviourPool<T>.InfinityCapacity;
+        [SerializeField, Min(-1)] private int capacity = Constant.InfinityCapacity;
 
 
         protected override T Prefab => prefab;

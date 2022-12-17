@@ -13,7 +13,7 @@ namespace EmreBeratKR.PB
         protected abstract T Prefab { get; }
         protected virtual Transform Parent => null;
         protected virtual int PrefillCount => 0;
-        protected virtual int Capacity => BehaviourPool<T>.InfinityCapacity;
+        protected virtual int Capacity => Constant.InfinityCapacity;
 
 
         private IBehaviourPool<T> m_Pool;
