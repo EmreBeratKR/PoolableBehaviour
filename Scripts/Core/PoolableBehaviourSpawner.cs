@@ -2,50 +2,23 @@ using UnityEngine;
 
 namespace EmreBeratKR.PB
 {
-    public abstract class PoolableBehaviourSpawner<T> : MonoBehaviour
+    public abstract class PoolableBehaviourSpawner<T> : BasePoolableBehaviourSpawner<T>
         where T : MonoBehaviour, IPoolableBehaviour, IPoolableBehaviour<T>
     {
-        public int CountAll => m_Pool.CountAll;
-        public int CountActive => m_Pool.CountActive;
-        public int CountInactive => m_Pool.CountInactive;
+        [SerializeField] private T prefab;
+        [SerializeField] private Transform parent;
+        [SerializeField, Min(0)] private int prefillCount;
+        [SerializeField, Min(-1)] private int capacity = BehaviourPool<T>.InfinityCapacity;
+
+
+        protected override T Prefab => prefab;
+        protected override Transform Parent => parent;
+        protected override int PrefillCount => prefillCount;
+        protected override int Capacity => capacity;
+    }
+
+    public sealed class PoolableBehaviourSpawner : PoolableBehaviourSpawner<PoolableBehaviour>
+    {
         
-        
-        protected abstract T Prefab { get; }
-
-
-        private IBehaviourPool<T> m_Pool;
-
-
-        protected virtual void Awake()
-        {
-            m_Pool = new BehaviourPool<T>();
-        }
-
-
-        public T Spawn()
-        {
-            return Spawn(Vector3.zero, Quaternion.identity);
-        }
-        
-        public T Spawn(Vector3 position)
-        {
-            return Spawn(position, Quaternion.identity);
-        }
-        
-        public T Spawn(Vector3 position, Quaternion rotation, Transform parent = null)
-        {
-            var newObject = m_Pool.GetObject(Prefab, position, rotation, parent);
-            return newObject;
-        }
-
-        public void ChangeCapacity(int capacity)
-        {
-            m_Pool.ChangeCapacity(capacity);
-        }
-
-        public void Clear()
-        {
-            m_Pool.Clear();
-        }
     }
 }

@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace EmreBeratKR.PB
 {
@@ -31,6 +33,36 @@ namespace EmreBeratKR.PB
         public virtual void OnAfterInitialized()
         {
             
+        }
+    }
+
+    public sealed class PoolableBehaviour : PoolableBehaviour<PoolableBehaviour>
+    {
+        public Callbacks callbacks;
+
+
+        public override void OnReset()
+        {
+            callbacks.onReset?.Invoke();
+        }
+
+        public override void OnBeforeInitialized()
+        {
+            callbacks.onBeforeInitialized?.Invoke();
+        }
+
+        public override void OnAfterInitialized()
+        {
+            callbacks.onAfterInitialized?.Invoke();
+        }
+
+
+        [Serializable]
+        public class Callbacks
+        {
+            public UnityEvent onReset;
+            public UnityEvent onBeforeInitialized;
+            public UnityEvent onAfterInitialized;
         }
     }
 }

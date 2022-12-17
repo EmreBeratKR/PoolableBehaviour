@@ -9,7 +9,7 @@ namespace EmreBeratKR.PB
     public class BehaviourPool<T> : IBehaviourPool<T>, IBehaviourPool
         where T : MonoBehaviour, IPoolableBehaviour<T>, IPoolableBehaviour
     {
-        private const int InfinityCapacity = -1;
+        public const int InfinityCapacity = -1;
 
 
         public int CountAll => m_Objects.Count;
@@ -65,6 +65,12 @@ namespace EmreBeratKR.PB
         public BehaviourPool(int capacity = InfinityCapacity)
         {
             ChangeCapacity(capacity);
+        }
+
+        public BehaviourPool(T prefab, int prefillCount, Transform parent = null, int capacity = InfinityCapacity)
+        {
+           ChangeCapacity(capacity);
+           Prefill(prefab, prefillCount, parent);
         }
 
 
@@ -143,6 +149,17 @@ namespace EmreBeratKR.PB
         }
 
 
+        private void Prefill(T prefab, int count, Transform parent)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                var newObject = Object.Instantiate(prefab, parent);
+                newObject.Inject(this);
+                m_Objects.Add(newObject);
+                newObject.gameObject.SetActive(false);
+            }
+        }
+        
         private bool TryGetFirstInactiveObject(out T firstInactiveObject)
         {
             for (var i = 0; i < m_Objects.Count; i++)
