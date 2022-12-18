@@ -64,7 +64,7 @@ public class BallSpawner : MonoBehaviour
     }
 }
 ```
-- Performance Test: ```ran for 1 mins each```
+- Performance Test: ```ran for 1 minute each```
 ```
 | Spawn Rate |        CPU Time |          FPS | Garbage Allocation per Frame |
 |:----------:|:---------------:|:------------:|:----------------------------:|
@@ -193,7 +193,7 @@ public class BallSpawner : MonoBehaviour
     }
 }
 ```
-- Performance Test: ```ran for 1 mins each```
+- Performance Test: ```ran for 1 minute each```
 ```
 | Spawn Rate |        CPU Time |          FPS | Garbage Allocation per Frame |
 |:----------:|:---------------:|:------------:|:----------------------------:|
@@ -299,7 +299,7 @@ public class BallSpawner : PoolableBehaviourSpawner<Ball>
     }
 }
 ```
-- Performance Test: ```ran for 1 mins each```
+- Performance Test: ```ran for 1 minute each```
 ```
 | Spawn Rate |        CPU Time |          FPS | Garbage Allocation per Frame |
 |:----------:|:---------------:|:------------:|:----------------------------:|
