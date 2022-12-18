@@ -26,10 +26,10 @@ An Object Pooling solution for Unity
 
 ## How to Use
 
-Let's say we want to spawn some amount of balls each frame with lifetime of one seconds
+Let's say we want to spawn some amount of balls each frame with lifetime of one second
 <br><br>
 
-**1**- Without PoolableBehaviour ```garbage allocated``` ```just for comparison DO NOT use it```
+**1**- Without PoolableBehaviour ```garbage allocated``` ```just for comparison, DO NOT use it```
 
 - Ball Class
 ```cs
@@ -136,7 +136,8 @@ public class Ball : MonoBehaviour
         }
     }
 
-    // This method can be named after anything like 'foo()' etc.
+    // This method is named after 'OnAfterInitialized' just for consistency
+    // so, it can be named after anything like 'foo()' etc.
     public void OnAfterInitialized()
     {
         body.velocity = Random.insideUnitSphere.normalized * Random.Range(10f, 30f);
