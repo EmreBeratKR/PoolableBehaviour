@@ -56,6 +56,7 @@ public class BallSpawner : MonoBehaviour
     {
         for (int i = 0; i < iterationCount; i++)
         {
+            // Yields a Garbage Allocation
             Instantiate(ballPrefab);
         }
     }
@@ -173,6 +174,7 @@ public class BallSpawner : MonoBehaviour
         for (int i = 0; i < iterationCount; i++)
         {
             // Gets an Object from the Object Pool
+            // If the Object Pool has an Inactive Object no Garbage will be allocated
             // Similar to 'Instantiate'
             poolableSpawner.Spawn();
         }
