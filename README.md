@@ -27,7 +27,7 @@ An Object Pooling solution for Unity
 Let's say we want to spawn some amount of balls each frame with lifetime of one seconds
 <br><br>
 
-**1**- Without PoolableBehaviour ```garbage allocated```
+**1**- Without PoolableBehaviour ```garbage allocated``` ```just for comparison DO NOT use it```
 
 - Ball Class
 ```cs
