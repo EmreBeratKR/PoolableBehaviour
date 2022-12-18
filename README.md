@@ -16,7 +16,7 @@
 
 ## About
 
-An Object Pooling solution for Unity
+An Open-source Object Pooling solution for Unity
 
 ## How to Install
 
