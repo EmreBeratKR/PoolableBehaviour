@@ -93,6 +93,8 @@ public class BallSpawner : MonoBehaviour
 ```8) Assign PoolableBehaviour reference to Ball script```
 <br>
 ```9) Drag 'Ball' to Assets folder to make a prefab```
+<br>
+```10) Delete the Prefab Instance 'Ball' from the Hierarchy```
 
 - Ball Class
 ```cs
@@ -215,6 +217,8 @@ public class BallSpawner : MonoBehaviour
 ```6) Assign RigidBody reference to Ball script```
 <br>
 ```7) Drag 'Ball' to Assets folder to make a prefab```
+<br>
+```8) Delete the Prefab Instance 'Ball' from the Hierarchy```
 
 - Ball Class
 ```cs
