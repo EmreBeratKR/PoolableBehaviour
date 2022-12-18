@@ -92,8 +92,9 @@ public class BallSpawner : MonoBehaviour
 ```cs
 public class Ball : MonoBehaviour
 {
-    [SerializeField] private Rigidbody body;
+    // PoolableBehaviour Component Handles the Object Pooling
     [SerializeField] private PoolableBehaviour poolable;
+    [SerializeField] private Rigidbody body;
 
 
     private float m_SpawnTime;
@@ -101,11 +102,14 @@ public class Ball : MonoBehaviour
 
     private void Awake()
     {
+        // Starts listening to 'onAfterInitiliazed' callback
+        // Similar to MonoBehaviour's 'Start'
         poolable.callbacks.onAfterInitialized.AddListener(OnAfterInitialized);
     }
 
     private void OnDestroy()
     {
+        // Stops listening to 'onAfterInitiliazed' callback
         poolable.callbacks.onAfterInitialized.RemoveListener(OnAfterInitialized);
     }
 
@@ -114,11 +118,13 @@ public class Ball : MonoBehaviour
     {
         if (Time.time - m_SpawnTime > 1f)
         {
+            // Releases the Object from the Pool
+            // Similar to 'Destroy'
             poolable.Release();
         }
     }
 
-
+    // This method can be named after anything like 'foo()' etc.
     public void OnAfterInitialized()
     {
         body.velocity = Random.insideUnitSphere.normalized * Random.Range(10f, 30f);
@@ -157,17 +163,17 @@ public class Ball : MonoBehaviour
 ```cs
 public class BallSpawner : MonoBehaviour
 {
+    // PoolableBehaviourSpawner Handles the Spawning inside the Object Pool
     [SerializeField] private PoolableBehaviourSpawner poolableSpawner;
     [SerializeField] private int iterationCount;
-    [SerializeField] private bool spawn;
 
 
     private void Update()
     {
-        if (!spawn) return;
-
         for (int i = 0; i < iterationCount; i++)
         {
+            // Gets an Object from the Object Pool
+            // Similar to 'Instantiate'
             poolableSpawner.Spawn();
         }
     }
