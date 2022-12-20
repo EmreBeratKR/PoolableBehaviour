@@ -74,7 +74,7 @@ public class BallSpawner : MonoBehaviour
 ```
 <br><br>
 
-**2**- Separated PoolableBehaviour ```composition``` ```no garbage allocation```
+**2**- Composite PoolableBehaviour ```composition``` ```no garbage allocation```
 
 - To Create Ball Prefab
 
