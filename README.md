@@ -74,7 +74,7 @@ public class BallSpawner : MonoBehaviour
 ```
 <br><br>
 
-**2**- Separated PoolableBehaviour ```composition``` ```no garbage allocation```
+**2**- Composite PoolableBehaviour ```composition``` ```no garbage allocation```
 
 - To Create Ball Prefab
 
@@ -315,14 +315,14 @@ public class BallSpawner : PoolableBehaviourSpawner<Ball>
 |                      Method | Spawn Rate |        CPU Time |          FPS | Garbage Allocation per Frame |
 |:---------------------------:|:----------:|:---------------:|:------------:|:----------------------------:|
 |   Without PoolableBehaviour |          1 |  0.003884473 ms | 257.4352 fps |                        120 B |
-| Separated PoolableBehaviour |          1 |  0.002996361 ms | 333.7382 fps |                            - |
+| Composite PoolableBehaviour |          1 |  0.002996361 ms | 333.7382 fps |                            - |
 | Inherited PoolableBehaviour |          1 |  0.002978657 ms | 335.7218 fps |                            - |
 |:---------------------------:|:----------:|:---------------:|:------------:|:----------------------------:|
 |   Without PoolableBehaviour |         10 |  0.009580554 ms | 104.3781 fps |                       1.2 KB |
-| Separated PoolableBehaviour |         10 |  0.006783063 ms | 147.4261 fps |                            - |
+| Composite PoolableBehaviour |         10 |  0.006783063 ms | 147.4261 fps |                            - |
 | Inherited PoolableBehaviour |         10 |  0.006748913 ms | 148.1721 fps |                            - |
 |:---------------------------:|:----------:|:---------------:|:------------:|:----------------------------:|
 |   Without PoolableBehaviour |        100 |  0.044309641 ms |  22.5685 fps |                      11.7 KB |
-| Separated PoolableBehaviour |        100 |  0.036871261 ms |  27.1214 fps |                            - |
+| Composite PoolableBehaviour |        100 |  0.036871261 ms |  27.1214 fps |                            - |
 | Inherited PoolableBehaviour |        100 |  0.036940251 ms |  27.0707 fps |                            - |
 ```
