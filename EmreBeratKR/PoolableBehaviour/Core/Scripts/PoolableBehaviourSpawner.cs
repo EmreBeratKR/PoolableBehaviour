@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace EmreBeratKR.PB
+namespace EmreBeratKR.PoolableBehaviour
 {
     public abstract class PoolableBehaviourSpawner<T> : BasePoolableBehaviourSpawner<T>
         where T : MonoBehaviour, IPoolableBehaviour, IPoolableBehaviour<T>

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace EmreBeratKR.PB
+namespace EmreBeratKR.PoolableBehaviour
 {
     public interface IBehaviourPool
     {

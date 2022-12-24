@@ -1,4 +1,4 @@
-namespace EmreBeratKR.PB
+namespace EmreBeratKR.PoolableBehaviour
 {
     public static class Constant
     {

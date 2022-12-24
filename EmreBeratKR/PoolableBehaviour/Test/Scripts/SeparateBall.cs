@@ -1,8 +1,7 @@
-using EmreBeratKR.PB;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Test
+namespace EmreBeratKR.PoolableBehaviour.Test
 {
     public class SeparateBall : MonoBehaviour
     {

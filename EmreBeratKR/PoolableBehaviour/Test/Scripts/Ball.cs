@@ -1,7 +1,7 @@
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Test
+namespace EmreBeratKR.PoolableBehaviour.Test
 {
     public class Ball : MonoBehaviour
     {

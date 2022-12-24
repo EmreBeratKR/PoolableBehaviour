@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace EmreBeratKR.PB
+namespace EmreBeratKR.PoolableBehaviour
 {
     public abstract class PoolableBehaviour<T> : MonoBehaviour, IPoolableBehaviour<T>, IPoolableBehaviour
         where T : MonoBehaviour, IPoolableBehaviour<T>, IPoolableBehaviour

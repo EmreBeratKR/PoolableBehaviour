@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Test
+namespace EmreBeratKR.PoolableBehaviour.Test
 {
     public class BallSpawner : MonoBehaviour
     {

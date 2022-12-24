@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace EmreBeratKR.PB
+namespace EmreBeratKR.PoolableBehaviour
 {
     public class BehaviourPool<T> : IBehaviourPool<T>, IBehaviourPool
         where T : MonoBehaviour, IPoolableBehaviour<T>, IPoolableBehaviour

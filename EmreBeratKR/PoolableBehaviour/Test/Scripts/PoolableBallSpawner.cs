@@ -1,7 +1,6 @@
-using EmreBeratKR.PB;
 using UnityEngine;
 
-namespace Test
+namespace EmreBeratKR.PoolableBehaviour.Test
 {
     public class PoolableBallSpawner : PoolableBehaviourSpawner<PoolableBall>
     {
