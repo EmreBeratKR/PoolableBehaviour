@@ -1,13 +1,14 @@
-using UnityEngine;
-
-namespace EmreBeratKR.PoolableBehaviour
+namespace EmreBeratKR.ObjectPool
 {
-    public class InvalidPoolCapacityException : UnityException
+    public class ObjectPoolExceptions : System.Exception 
     {
-        public InvalidPoolCapacityException()
-            : base("Invalid Pool Capacity!")
+        private ObjectPoolExceptions(string message) : base(message){}
+        
+        
+        public static ObjectPoolExceptions ObjectDoesNotExistInPool(UnityEngine.Object obj)
         {
-            HResult = -2147467261;
+            var message = $"{obj} does not exist in the pool!";
+            return new ObjectPoolExceptions(message);
         }
     }
 }
