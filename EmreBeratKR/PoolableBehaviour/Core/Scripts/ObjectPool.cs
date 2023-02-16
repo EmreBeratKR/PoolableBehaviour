@@ -2,7 +2,7 @@ namespace EmreBeratKR.ObjectPool
 {
     public static class ObjectPool
     {
-        private static readonly System.Collections.Generic.Dictionary<int, System.Collections.Generic.Stack<UnityEngine.GameObject>> Pools = new();
+        private static readonly System.Collections.Generic.Dictionary<int, ObjectPoolStack<UnityEngine.GameObject>> Pools = new();
         private static readonly System.Collections.Generic.Dictionary<int, int> PrefabIDs = new();
 
 
@@ -43,7 +43,7 @@ namespace EmreBeratKR.ObjectPool
 
             if (!Pools.ContainsKey(prefabID))
             {
-                Pools[prefabID] = new System.Collections.Generic.Stack<UnityEngine.GameObject>();
+                Pools[prefabID] = new ObjectPoolStack<UnityEngine.GameObject>();
             }
 
             var gameObject = obj.gameObject;
