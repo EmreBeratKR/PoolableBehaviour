@@ -9,7 +9,7 @@ namespace EmreBeratKR.ObjectPool
         public static T Get<T>(T prefab)
             where T : UnityEngine.Component
         {
-            var prefabID = prefab.GetInstanceID();
+            var prefabID = GetInstanceID(prefab);
 
             if (TryGetObjectFromPoolWithPrefabID(prefabID, out T obj))
             {
@@ -32,7 +32,7 @@ namespace EmreBeratKR.ObjectPool
         public static void Release<T>(T obj)
             where T : UnityEngine.Component
         {
-            var instanceID = obj.GetInstanceID();
+            var instanceID = GetInstanceID(obj);
 
             if (!PrefabIDs.ContainsKey(instanceID))
             {
@@ -64,7 +64,7 @@ namespace EmreBeratKR.ObjectPool
         public static void Fill<T>(T prefab, int count)
             where T : UnityEngine.Component
         {
-            var prefabID = prefab.GetInstanceID();
+            var prefabID = GetInstanceID(prefab);
             
             for (var i = 0; i < count; i++)
             {
@@ -76,6 +76,29 @@ namespace EmreBeratKR.ObjectPool
         public static void Fill(UnityEngine.GameObject prefab, int count)
         {
             Fill(prefab.transform, count);
+        }
+
+        public static void Clear<T>(T prefab)
+            where T : UnityEngine.Component
+        {
+            var prefabID = GetInstanceID(prefab);
+
+            if (!Pools.ContainsKey(prefabID)) return;
+
+            var pool = Pools[prefabID];
+
+            foreach (var gameObject in pool)
+            {
+                PrefabIDs.Remove(gameObject.GetInstanceID());
+                UnityEngine.Object.Destroy(gameObject);
+            }
+            
+            pool.Clear();
+        }
+
+        public static void Clear(UnityEngine.GameObject prefab)
+        {
+            Clear(prefab.transform);
         }
         
 
@@ -110,10 +133,21 @@ namespace EmreBeratKR.ObjectPool
                 poolObj.OnGetFromPool();
             }
             
-            var instanceID = obj.GetInstanceID();
+            var instanceID = GetInstanceID(obj);
             PrefabIDs[instanceID] = prefabID;
 
             return obj;
+        }
+
+        private static int GetInstanceID<T>(T prefab)
+            where T : UnityEngine.Component
+        {
+            return GetInstanceID(prefab.gameObject);
+        }
+
+        private static int GetInstanceID(UnityEngine.GameObject gameObject)
+        {
+            return gameObject.GetInstanceID();
         }
     }
 }

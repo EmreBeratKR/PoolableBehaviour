@@ -19,5 +19,11 @@ namespace EmreBeratKR.ObjectPool
         {
             ObjectPool.Fill(component, count);
         }
+
+        public static void Clear<T>(this T component)
+            where T : UnityEngine.Component
+        {
+            ObjectPool.Clear(component);
+        }
     }
 }

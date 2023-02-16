@@ -16,5 +16,10 @@ namespace EmreBeratKR.ObjectPool
         {
             ObjectPool.Fill(gameObject, count);
         }
+
+        public static void Clear(this UnityEngine.GameObject gameObject)
+        {
+            ObjectPool.Clear(gameObject);
+        }
     }
 }
