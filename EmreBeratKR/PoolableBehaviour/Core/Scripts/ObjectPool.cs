@@ -20,19 +20,8 @@ namespace EmreBeratKR.ObjectPool
                 
                 return obj;
             }
-        
-            obj = UnityEngine.Object.Instantiate(prefab);
 
-            if (obj is IPoolBehaviour poolObj)
-            {
-                poolObj.OnInstantiated();
-                poolObj.OnGetFromPool();
-            }
-            
-            var instanceID = obj.GetInstanceID();
-            PrefabIDs[instanceID] = prefabID;
-
-            return obj;
+            return InstantiateAndPutInPool(prefab, prefabID);
         }
 
         public static UnityEngine.GameObject Get(UnityEngine.GameObject prefab)
@@ -72,6 +61,23 @@ namespace EmreBeratKR.ObjectPool
             Release(gameObject.transform);
         }
 
+        public static void Fill<T>(T prefab, int count)
+            where T : UnityEngine.Component
+        {
+            var prefabID = prefab.GetInstanceID();
+            
+            for (var i = 0; i < count; i++)
+            {
+                var obj = InstantiateAndPutInPool(prefab, prefabID);
+                Release(obj);
+            }
+        }
+
+        public static void Fill(UnityEngine.GameObject prefab, int count)
+        {
+            Fill(prefab.transform, count);
+        }
+        
 
         private static bool TryGetObjectFromPoolWithPrefabID<T>(int prefabID, out T obj)
             where T : UnityEngine.Component
@@ -91,6 +97,23 @@ namespace EmreBeratKR.ObjectPool
             obj = gameObject.GetComponent<T>();
             gameObject.SetActive(true);
             return true;
+        }
+
+        private static T InstantiateAndPutInPool<T>(T prefab, int prefabID)
+            where T : UnityEngine.Component
+        {
+            var obj = UnityEngine.Object.Instantiate(prefab);
+
+            if (obj is IPoolBehaviour poolObj)
+            {
+                poolObj.OnInstantiated();
+                poolObj.OnGetFromPool();
+            }
+            
+            var instanceID = obj.GetInstanceID();
+            PrefabIDs[instanceID] = prefabID;
+
+            return obj;
         }
     }
 }

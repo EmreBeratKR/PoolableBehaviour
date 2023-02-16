@@ -13,5 +13,11 @@ namespace EmreBeratKR.ObjectPool
         { 
             ObjectPool.Release(component);
         }
+
+        public static void Fill<T>(this T component, int count)
+            where T : UnityEngine.Component
+        {
+            ObjectPool.Fill(component, count);
+        }
     }
 }
