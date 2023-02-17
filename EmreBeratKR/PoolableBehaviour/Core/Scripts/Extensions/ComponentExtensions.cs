@@ -7,6 +7,28 @@ namespace EmreBeratKR.ObjectPool
         {
             return ObjectPool.Get(component);
         }
+        
+        public static T Get<T>(this T component, UnityEngine.Transform parent)
+            where T : UnityEngine.Component
+        {
+            return ObjectPool.Get(component, parent);
+        }
+        
+        public static T Get<T>(this T component, UnityEngine.Vector3 position)
+            where T : UnityEngine.Component
+        {
+            return ObjectPool.Get(component, position);
+        }
+
+        public static T Get<T>(
+            this T component, 
+            UnityEngine.Vector3 position,
+            UnityEngine.Quaternion rotation,
+            UnityEngine.Transform parent = null)
+            where T : UnityEngine.Component
+        {
+            return ObjectPool.Get(component, position, rotation, parent);
+        }
 
         public static void Release<T>(this T component)
             where T : UnityEngine.Component

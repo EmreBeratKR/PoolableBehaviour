@@ -9,10 +9,37 @@ namespace EmreBeratKR.ObjectPool
         public static T Get<T>(T prefab)
             where T : UnityEngine.Component
         {
+            return Get(prefab, UnityEngine.Vector3.zero, UnityEngine.Quaternion.identity);
+        }
+        
+        public static T Get<T>(T prefab, UnityEngine.Transform parent)
+            where T : UnityEngine.Component
+        {
+            return Get(prefab, UnityEngine.Vector3.zero, UnityEngine.Quaternion.identity, parent);
+        }
+        
+        public static T Get<T>(T prefab, UnityEngine.Vector3 position)
+            where T : UnityEngine.Component
+        {
+            return Get(prefab, position, UnityEngine.Quaternion.identity);
+        }
+
+        public static T Get<T>(
+            T prefab,
+            UnityEngine.Vector3 position,
+            UnityEngine.Quaternion rotation,
+            UnityEngine.Transform parent = null)
+            where T : UnityEngine.Component
+        {
             var prefabID = GetInstanceID(prefab);
 
             if (TryGetObjectFromPoolWithPrefabID(prefabID, out T obj))
             {
+                var objTransform = obj.transform;
+                objTransform.position = position;
+                objTransform.rotation = rotation;
+                objTransform.parent = parent;
+                
                 if (obj is IPoolBehaviour poolObject)
                 {
                     poolObject.OnGetFromPool();
@@ -21,12 +48,31 @@ namespace EmreBeratKR.ObjectPool
                 return obj;
             }
 
-            return InstantiateAndPutInPool(prefab, prefabID);
+            return InstantiateAndPutInPool(prefab, prefabID, position, rotation, parent);
         }
 
         public static UnityEngine.GameObject Get(UnityEngine.GameObject prefab)
         {
-            return Get(prefab.transform).gameObject;
+            return Get(prefab.transform, UnityEngine.Vector3.zero, UnityEngine.Quaternion.identity).gameObject;
+        }
+        
+        public static UnityEngine.GameObject Get(UnityEngine.GameObject prefab, UnityEngine.Transform parent)
+        {
+            return Get(prefab.transform, parent).gameObject;
+        }
+        
+        public static UnityEngine.GameObject Get(UnityEngine.GameObject prefab, UnityEngine.Vector3 position)
+        {
+            return Get(prefab.transform, position, UnityEngine.Quaternion.identity).gameObject;
+        }
+        
+        public static UnityEngine.GameObject Get(
+            UnityEngine.GameObject prefab,
+            UnityEngine.Vector3 position,
+            UnityEngine.Quaternion rotation,
+            UnityEngine.Transform parent = null)
+        {
+            return Get(prefab.transform, position, rotation, parent).gameObject;
         }
 
         public static void Release<T>(T obj)
@@ -68,7 +114,7 @@ namespace EmreBeratKR.ObjectPool
             
             for (var i = 0; i < count; i++)
             {
-                var obj = InstantiateAndPutInPool(prefab, prefabID);
+                var obj = InstantiateAndPutInPool(prefab, prefabID, UnityEngine.Vector3.zero, UnityEngine.Quaternion.identity);
                 Release(obj);
             }
         }
@@ -122,10 +168,15 @@ namespace EmreBeratKR.ObjectPool
             return true;
         }
 
-        private static T InstantiateAndPutInPool<T>(T prefab, int prefabID)
+        private static T InstantiateAndPutInPool<T>(
+            T prefab, 
+            int prefabID,
+            UnityEngine.Vector3 position,
+            UnityEngine.Quaternion rotation,
+            UnityEngine.Transform parent = null)
             where T : UnityEngine.Component
         {
-            var obj = UnityEngine.Object.Instantiate(prefab);
+            var obj = UnityEngine.Object.Instantiate(prefab, position, rotation, parent);
 
             if (obj is IPoolBehaviour poolObj)
             {
