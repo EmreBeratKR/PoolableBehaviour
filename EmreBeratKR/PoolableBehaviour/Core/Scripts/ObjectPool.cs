@@ -127,8 +127,16 @@ namespace EmreBeratKR.ObjectPool
         public static void Clear<T>(T prefab)
             where T : UnityEngine.Component
         {
-            var prefabID = GetInstanceID(prefab);
+            Clear(prefab.GetInstanceID());
+        }
 
+        public static void Clear(UnityEngine.GameObject prefab)
+        {
+            Clear(prefab.GetInstanceID());
+        }
+
+        public static void Clear(int prefabID)
+        {
             if (!Pools.ContainsKey(prefabID)) return;
 
             var pool = Pools[prefabID];
@@ -140,11 +148,6 @@ namespace EmreBeratKR.ObjectPool
             }
             
             pool.Clear();
-        }
-
-        public static void Clear(UnityEngine.GameObject prefab)
-        {
-            Clear(prefab.transform);
         }
         
 
