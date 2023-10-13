@@ -127,12 +127,14 @@ namespace EmreBeratKR.ObjectPool
         public static void Clear<T>(T prefab)
             where T : UnityEngine.Component
         {
-            Clear(prefab.GetInstanceID());
+            Clear(prefab.gameObject);
         }
 
         public static void Clear(UnityEngine.GameObject prefab)
         {
-            Clear(prefab.GetInstanceID());
+            var instanceID = GetInstanceID(prefab);
+            
+            Clear(instanceID);
         }
 
         public static void Clear(int prefabID)
@@ -143,7 +145,7 @@ namespace EmreBeratKR.ObjectPool
 
             foreach (var gameObject in pool)
             {
-                PrefabIDs.Remove(gameObject.GetInstanceID());
+                PrefabIDs.Remove(GetInstanceID(gameObject));
                 UnityEngine.Object.Destroy(gameObject);
             }
             
