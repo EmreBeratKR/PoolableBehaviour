@@ -40,9 +40,9 @@ namespace EmreBeratKR.ObjectPool
                 objTransform.rotation = rotation;
                 objTransform.parent = parent;
                 
-                if (obj is IPoolBehaviour poolObject)
+                if (obj.TryGetComponent(out IOnGetFromPool call))
                 {
-                    poolObject.OnGetFromPool();
+                    call.OnGetFromPool();
                 }
                 
                 return obj;
@@ -96,9 +96,9 @@ namespace EmreBeratKR.ObjectPool
             Pools[prefabID].Push(gameObject);
             gameObject.SetActive(false);
 
-            if (obj is IPoolBehaviour poolObject)
+            if (obj.TryGetComponent(out IOnReleasedToPool call))
             {
-                poolObject.OnReleasedToPool();
+                call.OnReleasedToPool();
             }
         }
 
@@ -183,10 +183,14 @@ namespace EmreBeratKR.ObjectPool
         {
             var obj = UnityEngine.Object.Instantiate(prefab, position, rotation, parent);
 
-            if (obj is IPoolBehaviour poolObj)
+            if (obj.TryGetComponent(out IOnInstantiated instantiatedCall))
             {
-                poolObj.OnInstantiated();
-                poolObj.OnGetFromPool();
+                instantiatedCall.OnInstantiated();
+            }
+
+            if (obj.TryGetComponent(out IOnGetFromPool getCall))
+            {
+                getCall.OnGetFromPool();
             }
             
             var instanceID = GetInstanceID(obj);

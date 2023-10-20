@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,11 +6,12 @@ namespace EmreBeratKR.ObjectPool.Test
     public class Test_ObjectPool : MonoBehaviour
     {
         private List<GameObject> objs = new();
-        private GameObject obj;
+        private Test_PoolBehaviour obj;
 
         private void Start()
         {
-            obj = new GameObject("Prefab");
+            obj = new GameObject("Prefab")
+                .AddComponent<Test_PoolBehaviour>();
             DontDestroyOnLoad(obj);
         }
 
@@ -19,8 +19,8 @@ namespace EmreBeratKR.ObjectPool.Test
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                var newObj = obj.Get();
-                objs.Add(newObj);
+                var newObj = obj.gameObject.Get();
+                objs.Add(newObj.gameObject);
             }
 
             if (Input.GetKeyDown(KeyCode.R))
