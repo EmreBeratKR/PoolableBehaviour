@@ -2,24 +2,24 @@ namespace EmreBeratKR.ObjectPool
 {
     public static class ObjectPool
     {
-        private static readonly System.Collections.Generic.Dictionary<int, ObjectPoolStack<UnityEngine.GameObject>> Pools = new();
+        private static readonly System.Collections.Generic.Dictionary<int, ObjectPoolStack<UnityEngine.Object>> Pools = new();
         private static readonly System.Collections.Generic.Dictionary<int, int> PrefabIDs = new();
 
 
         public static T Get<T>(T prefab)
-            where T : UnityEngine.Component
+            where T : UnityEngine.Object
         {
             return Get(prefab, UnityEngine.Vector3.zero, UnityEngine.Quaternion.identity);
         }
         
         public static T Get<T>(T prefab, UnityEngine.Transform parent)
-            where T : UnityEngine.Component
+            where T : UnityEngine.Object
         {
             return Get(prefab, UnityEngine.Vector3.zero, UnityEngine.Quaternion.identity, parent);
         }
         
         public static T Get<T>(T prefab, UnityEngine.Vector3 position)
-            where T : UnityEngine.Component
+            where T : UnityEngine.Object
         {
             return Get(prefab, position, UnityEngine.Quaternion.identity);
         }
@@ -29,18 +29,18 @@ namespace EmreBeratKR.ObjectPool
             UnityEngine.Vector3 position,
             UnityEngine.Quaternion rotation,
             UnityEngine.Transform parent = null)
-            where T : UnityEngine.Component
+            where T : UnityEngine.Object
         {
             var prefabID = GetInstanceID(prefab);
 
             if (TryGetObjectFromPoolWithPrefabID(prefabID, out T obj))
             {
-                var objTransform = obj.transform;
+                var objTransform = GetTransform(obj);
                 objTransform.position = position;
                 objTransform.rotation = rotation;
                 objTransform.parent = parent;
                 
-                if (obj.TryGetComponent(out IOnGetFromPool call))
+                if (TryGetComponent(obj, out IOnGetFromPool call))
                 {
                     call.OnGetFromPool();
                 }
@@ -51,32 +51,8 @@ namespace EmreBeratKR.ObjectPool
             return InstantiateAndPutInPool(prefab, prefabID, position, rotation, parent);
         }
 
-        public static UnityEngine.GameObject Get(UnityEngine.GameObject prefab)
-        {
-            return Get(prefab.transform, UnityEngine.Vector3.zero, UnityEngine.Quaternion.identity).gameObject;
-        }
-        
-        public static UnityEngine.GameObject Get(UnityEngine.GameObject prefab, UnityEngine.Transform parent)
-        {
-            return Get(prefab.transform, parent).gameObject;
-        }
-        
-        public static UnityEngine.GameObject Get(UnityEngine.GameObject prefab, UnityEngine.Vector3 position)
-        {
-            return Get(prefab.transform, position, UnityEngine.Quaternion.identity).gameObject;
-        }
-        
-        public static UnityEngine.GameObject Get(
-            UnityEngine.GameObject prefab,
-            UnityEngine.Vector3 position,
-            UnityEngine.Quaternion rotation,
-            UnityEngine.Transform parent = null)
-        {
-            return Get(prefab.transform, position, rotation, parent).gameObject;
-        }
-
         public static void Release<T>(T obj)
-            where T : UnityEngine.Component
+            where T : UnityEngine.Object
         {
             var instanceID = GetInstanceID(obj);
 
@@ -89,22 +65,17 @@ namespace EmreBeratKR.ObjectPool
 
             if (!Pools.ContainsKey(prefabID))
             {
-                Pools[prefabID] = new ObjectPoolStack<UnityEngine.GameObject>();
+                Pools[prefabID] = new ObjectPoolStack<UnityEngine.Object>();
             }
 
-            var gameObject = obj.gameObject;
+            var gameObject = GetGameObject(obj);
             Pools[prefabID].Push(gameObject);
             gameObject.SetActive(false);
 
-            if (obj.TryGetComponent(out IOnReleasedToPool call))
+            if (TryGetComponent(obj, out IOnReleasedToPool call))
             {
                 call.OnReleasedToPool();
             }
-        }
-
-        public static void Release(UnityEngine.GameObject gameObject)
-        {
-            Release(gameObject.transform);
         }
 
         public static void Fill<T>(T prefab, int count)
@@ -143,10 +114,10 @@ namespace EmreBeratKR.ObjectPool
 
             var pool = Pools[prefabID];
 
-            foreach (var gameObject in pool)
+            foreach (var obj in pool)
             {
-                PrefabIDs.Remove(GetInstanceID(gameObject));
-                UnityEngine.Object.Destroy(gameObject);
+                PrefabIDs.Remove(GetInstanceID(obj));
+                Destroy(obj);
             }
             
             pool.Clear();
@@ -154,7 +125,7 @@ namespace EmreBeratKR.ObjectPool
         
 
         private static bool TryGetObjectFromPoolWithPrefabID<T>(int prefabID, out T obj)
-            where T : UnityEngine.Component
+            where T : UnityEngine.Object
         {
             if (!Pools.ContainsKey(prefabID))
             {
@@ -162,14 +133,14 @@ namespace EmreBeratKR.ObjectPool
                 return false;
             }
 
-            if (!Pools[prefabID].TryPop(out var gameObject))
+            if (!Pools[prefabID].TryPop(out var poolObj))
             {
                 obj = null;
                 return false;
             }
 
-            obj = gameObject.GetComponent<T>();
-            gameObject.SetActive(true);
+            obj = (T) poolObj;
+            GetGameObject(obj).SetActive(true);
             return true;
         }
 
@@ -179,16 +150,16 @@ namespace EmreBeratKR.ObjectPool
             UnityEngine.Vector3 position,
             UnityEngine.Quaternion rotation,
             UnityEngine.Transform parent = null)
-            where T : UnityEngine.Component
+            where T : UnityEngine.Object
         {
             var obj = UnityEngine.Object.Instantiate(prefab, position, rotation, parent);
 
-            if (obj.TryGetComponent(out IOnInstantiated instantiatedCall))
+            if (TryGetComponent(obj, out IOnInstantiated instantiatedCall))
             {
                 instantiatedCall.OnInstantiated();
             }
 
-            if (obj.TryGetComponent(out IOnGetFromPool getCall))
+            if (TryGetComponent(obj, out IOnGetFromPool getCall))
             {
                 getCall.OnGetFromPool();
             }
@@ -199,15 +170,58 @@ namespace EmreBeratKR.ObjectPool
             return obj;
         }
 
-        private static int GetInstanceID<T>(T prefab)
-            where T : UnityEngine.Component
+        private static int GetInstanceID(UnityEngine.Object obj)
         {
-            return GetInstanceID(prefab.gameObject);
+            return obj.GetInstanceID();
         }
 
-        private static int GetInstanceID(UnityEngine.GameObject gameObject)
+        private static void Destroy(UnityEngine.Object obj)
         {
-            return gameObject.GetInstanceID();
+            if (obj is UnityEngine.GameObject gameObject)
+            {
+                UnityEngine.Object.Destroy(gameObject);
+            }
+            
+            else if (obj is UnityEngine.Component component)
+            {
+                UnityEngine.Object.Destroy(component.gameObject);
+            }
+        }
+
+        private static UnityEngine.GameObject GetGameObject(UnityEngine.Object obj)
+        {
+            return obj switch
+            {
+                UnityEngine.GameObject gameObject => gameObject,
+                UnityEngine.Component component => component.gameObject,
+                _ => default
+            };
+        }
+
+        private static UnityEngine.Transform GetTransform(UnityEngine.Object obj)
+        {
+            return obj switch
+            {
+                UnityEngine.GameObject gameObject => gameObject.transform,
+                UnityEngine.Component component => component.transform,
+                _ => default
+            };
+        }
+
+        private static bool TryGetComponent<T>(UnityEngine.Object obj, out T component)
+        {
+            if (obj is UnityEngine.GameObject gameObject)
+            {
+                return gameObject.TryGetComponent(out component);
+            }
+
+            if (obj is UnityEngine.Component comp)
+            {
+                return comp.TryGetComponent(out component);
+            }
+
+            component = default;
+            return false;
         }
     }
 }

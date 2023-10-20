@@ -5,7 +5,7 @@ namespace EmreBeratKR.ObjectPool.Test
 {
     public class Test_ObjectPool : MonoBehaviour
     {
-        private List<GameObject> objs = new();
+        private List<Test_PoolBehaviour> objs = new();
         private Test_PoolBehaviour obj;
 
         private void Start()
@@ -19,8 +19,8 @@ namespace EmreBeratKR.ObjectPool.Test
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                var newObj = obj.gameObject.Get();
-                objs.Add(newObj.gameObject);
+                var newObj = obj.Get();
+                objs.Add(newObj);
             }
 
             if (Input.GetKeyDown(KeyCode.R))
