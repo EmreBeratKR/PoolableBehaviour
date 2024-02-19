@@ -25,7 +25,7 @@ namespace EmreBeratKR.ObjectPool.Editor
         
         private void OnGUI()
         {
-            return;
+            //return;
             
             if (!Application.isPlaying) return;
 
@@ -55,9 +55,9 @@ namespace EmreBeratKR.ObjectPool.Editor
         }
 
 
-        private static void OnSubPoolGUI(int index, int prefabID, Stack<GameObject> pool)
+        private static void OnSubPoolGUI(int index, int prefabID, Stack<Object> pool)
         {
-            var prefab = (GameObject) EditorUtility.InstanceIDToObject(prefabID);
+            var prefab = EditorUtility.InstanceIDToObject(prefabID);
             var title = $"[{index}]: {prefab.name}";
             PoolFoldoutValue[index] = EditorGUILayout.Foldout(PoolFoldoutValue[index], title);
             
@@ -73,7 +73,7 @@ namespace EmreBeratKR.ObjectPool.Editor
 
             if (GUILayout.Button("Clear"))
             {
-                ObjectPool.Clear(EditorUtility.InstanceIDToObject(prefabID));
+                ObjectPool.Clear(prefab);
             }
 
             DisableGUI(true, () =>
@@ -121,10 +121,10 @@ namespace EmreBeratKR.ObjectPool.Editor
             EditorGUI.EndDisabledGroup();
         }
         
-        private static Dictionary<int, Stack<GameObject>> GetPools()
+        private static Dictionary<int, Stack<Object>> GetPools()
         {
-            return (Dictionary<int, Stack<GameObject>>) typeof(ObjectPool)
-                .GetField("Pools", BindingFlags.NonPublic | BindingFlags.Static)
+            return (Dictionary<int, Stack<Object>>) typeof(ObjectPool)
+                .GetField("POOLS", BindingFlags.NonPublic | BindingFlags.Static)
                 ?.GetValue(null);
         }
     }
