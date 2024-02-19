@@ -25,11 +25,9 @@ namespace EmreBeratKR.ObjectPool.Editor
         
         private void OnGUI()
         {
-            //return;
-            
             if (!Application.isPlaying) return;
 
-            var pools = GetPools();
+            var pools = GetPoolStacks();
             var poolCount = pools.Count;
 
             for (var i = 0; i < poolCount - PoolFoldoutValue.Count; i++)
@@ -43,7 +41,7 @@ namespace EmreBeratKR.ObjectPool.Editor
             }
             
             var index = 0;
-            foreach (var (key, value) in GetPools())
+            foreach (var (key, value) in GetPoolStacks())
             {
                 try
                 {
@@ -55,7 +53,7 @@ namespace EmreBeratKR.ObjectPool.Editor
         }
 
 
-        private static void OnSubPoolGUI(int index, int prefabID, Stack<Object> pool)
+        private static void OnSubPoolGUI(int index, int prefabID, PoolStack pool)
         {
             var prefab = EditorUtility.InstanceIDToObject(prefabID);
             var title = $"[{index}]: {prefab.name}";
@@ -88,7 +86,7 @@ namespace EmreBeratKR.ObjectPool.Editor
             if (PoolObjectsFoldoutValue[index])
             {
                 var counter = 0;
-                foreach (var gameObject in pool)
+                foreach (var gameObject in pool.allObjects)
                 {
                     ObjectFieldGUI($"object ({counter})", gameObject, true);
                     counter += 1;
@@ -121,10 +119,10 @@ namespace EmreBeratKR.ObjectPool.Editor
             EditorGUI.EndDisabledGroup();
         }
         
-        private static Dictionary<int, Stack<Object>> GetPools()
+        private static Dictionary<int, PoolStack> GetPoolStacks()
         {
-            return (Dictionary<int, Stack<Object>>) typeof(ObjectPool)
-                .GetField("POOLS", BindingFlags.NonPublic | BindingFlags.Static)
+            return (Dictionary<int, PoolStack>) typeof(ObjectPool)
+                .GetField("POOL_STACKS", BindingFlags.NonPublic | BindingFlags.Static)
                 ?.GetValue(null);
         }
     }

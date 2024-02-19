@@ -19,6 +19,7 @@ namespace EmreBeratKR.ObjectPool.Test
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
+                Debug.LogError(prefab.GetInstanceID());
                 var newObj = prefab.Get();
                 objs.Add(newObj);
             }

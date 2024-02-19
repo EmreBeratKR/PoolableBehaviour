@@ -5,7 +5,7 @@ namespace EmreBeratKR.ObjectPool
 {
     public static class ObjectPool
     {
-        private static readonly Dictionary<int, Stack<Object>> POOLS = new();
+        private static readonly Dictionary<int, PoolStack> POOL_STACKS = new();
         private static readonly Dictionary<int, int> PREFAB_IDS = new();
 
 
@@ -65,14 +65,9 @@ namespace EmreBeratKR.ObjectPool
             }
         
             var prefabID = PREFAB_IDS[instanceID];
-
-            if (!POOLS.ContainsKey(prefabID))
-            {
-                POOLS[prefabID] = new Stack<Object>();
-            }
-
             var gameObject = GetGameObject(obj);
-            POOLS[prefabID].Push(obj);
+            
+            POOL_STACKS[prefabID].Push(obj);
             gameObject.SetActive(false);
 
             if (obj is IPoolObjectOnReleasedToPool call)
@@ -103,29 +98,29 @@ namespace EmreBeratKR.ObjectPool
 
         private static void ClearByInstanceID(int prefabID)
         {
-            if (!POOLS.ContainsKey(prefabID)) return;
+            if (!POOL_STACKS.ContainsKey(prefabID)) return;
 
-            var pool = POOLS[prefabID];
+            var poolStack = POOL_STACKS[prefabID];
 
-            foreach (var obj in pool)
+            foreach (var obj in poolStack.allObjects)
             {
                 PREFAB_IDS.Remove(GetInstanceID(obj));
                 Destroy(obj);
             }
             
-            pool.Clear();
+            poolStack.Clear();
         }
         
         private static bool TryGetObjectFromPoolWithPrefabID<T>(int prefabID, out T obj)
             where T : Object
         {
-            if (!POOLS.ContainsKey(prefabID))
+            if (!POOL_STACKS.ContainsKey(prefabID))
             {
                 obj = null;
                 return false;
             }
 
-            if (!POOLS[prefabID].TryPop(out var poolObj))
+            if (!POOL_STACKS[prefabID].TryPop(out var poolObj))
             {
                 obj = null;
                 return false;
@@ -145,6 +140,7 @@ namespace EmreBeratKR.ObjectPool
             where T : Object
         {
             var obj = Object.Instantiate(prefab, position, rotation, parent);
+            var instanceID = GetInstanceID(obj);
 
             if (obj is IPoolObjectOnInstantiated instantiatedCall)
             {
@@ -155,8 +151,13 @@ namespace EmreBeratKR.ObjectPool
             {
                 getCall.OnGetFromPool();
             }
+
+            if (!POOL_STACKS.ContainsKey(prefabID))
+            {
+                POOL_STACKS[prefabID] = new PoolStack();
+            }
             
-            var instanceID = GetInstanceID(obj);
+            POOL_STACKS[prefabID].allObjects.Add(obj);
             PREFAB_IDS[instanceID] = prefabID;
 
             return obj;
