@@ -1,6 +1,6 @@
 namespace EmreBeratKR.ObjectPool
 {
-    public interface IOnReleasedToPool
+    public interface IPoolObjectOnReleasedToPool
     {
         void OnReleasedToPool();
     }

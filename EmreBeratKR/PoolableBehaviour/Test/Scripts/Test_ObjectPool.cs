@@ -6,20 +6,20 @@ namespace EmreBeratKR.ObjectPool.Test
     public class Test_ObjectPool : MonoBehaviour
     {
         private List<Test_PoolBehaviour> objs = new();
-        private Test_PoolBehaviour obj;
+        private Test_PoolBehaviour prefab;
 
         private void Start()
         {
-            obj = new GameObject("Prefab")
+            prefab = new GameObject("Prefab")
                 .AddComponent<Test_PoolBehaviour>();
-            DontDestroyOnLoad(obj);
+            DontDestroyOnLoad(prefab);
         }
 
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                var newObj = obj.Get();
+                var newObj = prefab.Get();
                 objs.Add(newObj);
             }
 
@@ -30,6 +30,11 @@ namespace EmreBeratKR.ObjectPool.Test
                     objs[0].Release();
                     objs.RemoveAt(0);
                 }
+            }
+
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                prefab.Clear();
             }
         }
     }

@@ -3,9 +3,9 @@ using UnityEngine;
 namespace EmreBeratKR.ObjectPool
 {
     public abstract class PoolBehaviour : MonoBehaviour,
-        IOnInstantiated,
-        IOnGetFromPool,
-        IOnReleasedToPool
+        IPoolObjectOnInstantiated,
+        IPoolObjectOnGetFromPool,
+        IPoolObjectOnReleasedToPool
     {
         public virtual void OnInstantiated() {}
         public virtual void OnGetFromPool() {}

@@ -1,6 +1,6 @@
 namespace EmreBeratKR.ObjectPool
 {
-    public interface IOnInstantiated
+    public interface IPoolObjectOnInstantiated
     {
         void OnInstantiated();
     }

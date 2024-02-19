@@ -1,6 +1,6 @@
 namespace EmreBeratKR.ObjectPool
 {
-    public interface IOnGetFromPool
+    public interface IPoolObjectOnGetFromPool
     {
         void OnGetFromPool();
     }
