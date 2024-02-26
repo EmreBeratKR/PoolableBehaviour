@@ -1,0 +1,18 @@
+{
+    "name": "PoolableBehaviour.Test",
+    "rootNamespace": "",
+    "references": [
+        "GUID:bac0c54e7df62445390a36a6a5fa84b1"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
