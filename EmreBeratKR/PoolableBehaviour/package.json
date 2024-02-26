@@ -8,7 +8,7 @@
   },
   "version": "1.0.0",
   "unity": "2021.3",
-  "description": "Provides an efficient async/await integration to Unity.",
+  "description": "Provides an efficient and Easy to use Object Pool solution for Unity.",
   "keywords": [ "Object Pool", "PoolableBehaviour" ],
   "license": "MIT",
   "category": "Tool",
