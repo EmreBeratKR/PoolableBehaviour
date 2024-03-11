@@ -9,6 +9,26 @@ namespace EmreBeratKR.ObjectPool
         private static readonly Dictionary<int, int> PREFAB_IDS = new();
 
 
+#if UNITY_EDITOR
+
+        [UnityEditor.InitializeOnEnterPlayMode]
+        private static void Initialize()
+        {
+            const System.Reflection.BindingFlags binding = 
+                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic;
+            
+            typeof(ObjectPool)
+                .GetField(nameof(POOL_STACKS), binding)
+                ?.SetValue(null, new Dictionary<int, PoolStack>());
+            
+            typeof(ObjectPool)
+                .GetField(nameof(PREFAB_IDS), binding)
+                ?.SetValue(null, new Dictionary<int, int>());
+        }
+        
+#endif
+        
+
         public static T Get<T>(T prefab)
             where T : Object
         {
